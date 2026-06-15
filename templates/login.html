@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <title>ログイン — 記憶のノート</title>
+  <style>
+    :root {
+      --bg:#0c0d11; --surface:#13151e; --border:#252838; --border-light:#2f3347;
+      --text:#dde1ec; --text-muted:#9aa3b8; --text-dim:#555d7a;
+      --blue:#5b8ff9; --red:#ef4444;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family:'DM Mono',monospace;
+      background:var(--bg); color:var(--text);
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+    }
+    .box {
+      background:var(--surface); border:1px solid var(--border-light);
+      border-top:2px solid var(--blue);
+      padding:40px 36px; width:100%; max-width:360px;
+    }
+    .title { font-size:13px; letter-spacing:2px; color:var(--blue); margin-bottom:6px; }
+    .subtitle { font-size:9px; letter-spacing:1.5px; color:var(--text-dim);
+      text-transform:uppercase; margin-bottom:28px; }
+    label { display:block; font-size:9px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--text-muted); margin-bottom:8px; }
+    input[type="password"] {
+      width:100%; padding:12px; background:#1b1e2b; border:1px solid var(--border-light);
+      color:var(--text); font-family:'DM Mono',monospace; font-size:16px;
+      outline:none; transition:border-color 0.15s; margin-bottom:20px;
+    }
+    input[type="password"]:focus { border-color:var(--blue); }
+    button {
+      width:100%; padding:13px; background:var(--blue); color:#0c0d11;
+      font-family:'DM Mono',monospace; font-size:13px; letter-spacing:1px;
+      border:none; cursor:pointer; transition:background 0.15s;
+    }
+    button:hover { background:#7aaafb; }
+    .error { font-size:11px; color:var(--red); margin-bottom:16px; padding:8px 12px;
+      background:rgba(239,68,68,0.08); border-left:2px solid var(--red); }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="title">記憶のノート</div>
+    <div class="subtitle">Private Access</div>
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+    <form method="POST">
+      <label>パスワード</label>
+      <input type="password" name="password" autofocus autocomplete="current-password">
+      <button type="submit">はいる →</button>
+    </form>
+  </div>
+</body>
+</html>
