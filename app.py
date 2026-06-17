@@ -74,16 +74,32 @@ def index():
         WHERE entry_date = ? ORDER BY id
     """, (today,))
     today_entries = c.fetchall()
-    c.execute("""
-        SELECT id, entry_date, created_at, text FROM entries
-        ORDER BY id DESC LIMIT 300
-    """)
-    all_entries = c.fetchall()
     conn.close()
     return render_template('index.html',
                            today=today,
-                           today_entries=today_entries,
-                           all_entries=all_entries)
+                           today_entries=today_entries)
+
+
+@app.route('/history')
+def history():
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute("""
+        SELECT id, entry_date, created_at, text FROM entries
+        ORDER BY id DESC
+    """)
+    rows = c.fetchall()
+    conn.close()
+    # 日付ごとにまとめる（新しい日付が上、同じ日の中は古い順）
+    groups = []
+    for r in rows:  # rows は新しい順
+        d = r['entry_date']
+        if not groups or groups[-1]['date'] != d:
+            groups.append({'date': d, 'entries': []})
+        groups[-1]['entries'].append(r)
+    for g in groups:
+        g['entries'].reverse()  # 同じ日の中は古い順（朝→夜）
+    return render_template('history.html', groups=groups, total=len(rows))
 
 
 @app.route('/add', methods=['POST'])

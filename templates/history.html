@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0c0d11">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <title>これまでの記録 — 記憶のノート</title>
+  <style>
+    :root {
+      --bg:#0c0d11; --surface:#13151e; --border:#252838; --border-light:#2f3347;
+      --text:#dde1ec; --text-muted:#9aa3b8; --text-dim:#555d7a;
+      --blue:#5b8ff9; --red:#ef4444;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family:'DM Mono',monospace;
+      background:var(--bg); color:var(--text);
+      padding:20px 14px 60px; line-height:1.7;
+    }
+    .wrap { max-width:560px; margin:0 auto; }
+    header { display:flex; align-items:baseline; justify-content:space-between;
+      margin-bottom:8px; }
+    h1 { font-size:16px; letter-spacing:2px; color:var(--blue); font-weight:500; }
+    .count { font-size:11px; color:var(--text-dim); letter-spacing:1px; }
+    .backlink { display:inline-block; color:var(--blue); text-decoration:none;
+      font-size:13px; margin:14px 0 4px; }
+    .backlink:hover { text-decoration:underline; }
+    .day-head { font-size:12px; letter-spacing:1px; color:var(--blue);
+      margin:22px 0 0; padding-bottom:4px; border-bottom:1px solid var(--border-light); }
+    .card {
+      background:var(--surface); border:1px solid var(--border);
+      padding:6px 16px; margin-top:8px;
+    }
+    .entry { display:flex; gap:10px; align-items:flex-start;
+      padding:10px 0; border-bottom:1px solid var(--border); }
+    .entry:last-child { border-bottom:none; }
+    .entry .time { font-size:11px; color:var(--blue); flex-shrink:0;
+      padding-top:2px; white-space:nowrap; }
+    .body-wrap { flex:1; min-width:0; }
+    .entry .body { font-size:14px; white-space:pre-wrap; word-break:break-word; }
+    .edit-form { display:none; margin:2px 0; }
+    .edit-form textarea { width:100%; padding:12px; background:#1b1e2b;
+      border:1px solid var(--border-light); color:var(--text);
+      font-family:'DM Mono',monospace; font-size:16px; outline:none;
+      resize:vertical; min-height:48px; }
+    .edit-form textarea:focus { border-color:var(--blue); }
+    .edit-actions { display:flex; gap:8px; }
+    button { font-family:'DM Mono',monospace; cursor:pointer; }
+    button.mini { padding:6px 12px; font-size:11px; margin-top:8px;
+      background:var(--blue); color:#0c0d11; border:none; letter-spacing:1px; }
+    button.mini:hover { background:#7aaafb; }
+    button.mini.ghost { background:transparent; color:var(--blue);
+      border:1px solid var(--border-light); }
+    button.mini.ghost:hover { background:#1b1e2b; }
+    .row-actions { display:flex; gap:2px; flex-shrink:0; }
+    button.icon { background:transparent; border:none; color:var(--text-dim);
+      padding:2px 6px; margin:0; font-size:15px; line-height:1; }
+    button.icon:hover { color:var(--blue); }
+    button.icon.del:hover { color:var(--red); }
+    .entry form { margin:0; }
+    .empty { font-size:12px; color:var(--text-dim); margin-top:16px; }
+  </style>
+</head>
+<body>
+{% from '_entry.html' import entry_row %}
+
+  <div class="wrap">
+    <header>
+      <h1>これまでの記録</h1>
+      <span class="count">全 {{ total }} 件</span>
+    </header>
+    <a class="backlink" href="/">← 今日の画面にもどる</a>
+
+    {% if groups %}
+      {% for g in groups %}
+        <div class="day-head">{{ g['date'] }}</div>
+        <div class="card">
+          {% for e in g['entries'] %}{{ entry_row(e) }}{% endfor %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty">まだ記録はありません。</div>
+    {% endif %}
+  </div>
+
+  <script>
+    function startEdit(btn) {
+      const row = btn.closest('.entry');
+      row.querySelector('.body').style.display = 'none';
+      const form = row.querySelector('.edit-form');
+      form.style.display = 'block';
+      form.querySelector('textarea').focus();
+    }
+    function cancelEdit(btn) {
+      const row = btn.closest('.entry');
+      row.querySelector('.edit-form').style.display = 'none';
+      row.querySelector('.body').style.display = '';
+    }
+  </script>
+</body>
+</html>

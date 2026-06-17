@@ -71,36 +71,13 @@
       border:1px solid var(--border); font-size:14px; white-space:pre-wrap;
       word-break:break-word; min-height:8px; }
     .out:empty { display:none; }
-    details { margin-top:18px; }
-    summary { font-size:10px; letter-spacing:1.5px; text-transform:uppercase;
-      color:var(--text-dim); cursor:pointer; padding:8px 0; }
+    .alllink { display:inline-block; color:var(--blue); text-decoration:none;
+      font-size:14px; padding:4px 0; }
+    .alllink:hover { text-decoration:underline; }
   </style>
 </head>
 <body>
-
-{# 記録1件を描画するマクロ。今日の記録と過去の記録の両方で使う。 #}
-{% macro entry_row(e, show_date=False) %}
-<div class="entry">
-  <span class="time">{% if show_date %}{{ e['created_at'] }}{% else %}{{ e['created_at'][11:] }}{% endif %}</span>
-  <div class="body-wrap">
-    <div class="body">{{ e['text'] }}</div>
-    <form class="edit-form" method="POST" action="/edit/{{ e['id'] }}">
-      <textarea name="text">{{ e['text'] }}</textarea>
-      <div class="edit-actions">
-        <button type="submit" class="mini">保存</button>
-        <button type="button" class="mini ghost" onclick="cancelEdit(this)">やめる</button>
-      </div>
-    </form>
-  </div>
-  <div class="row-actions">
-    <button type="button" class="icon" title="編集" onclick="startEdit(this)">✎</button>
-    <form method="POST" action="/delete/{{ e['id'] }}"
-          onsubmit="return confirm('この記録を削除しますか？');">
-      <button class="icon del" type="submit" title="削除">×</button>
-    </form>
-  </div>
-</div>
-{% endmacro %}
+{% from '_entry.html' import entry_row %}
 
   <div class="wrap">
     <header>
@@ -144,17 +121,11 @@
       <div class="out" id="ask-out"></div>
     </div>
 
-    <!-- 過去の記録（編集・削除できる） -->
-    <details>
-      <summary>これまでの記録を見る・直す（直近300件）</summary>
-      {% if all_entries %}
-        <div class="card" style="margin-top:8px;">
-          {% for e in all_entries %}{{ entry_row(e, show_date=True) }}{% endfor %}
-        </div>
-      {% else %}
-        <div class="empty">まだ記録はありません。</div>
-      {% endif %}
-    </details>
+    <!-- すべての記録へ -->
+    <div class="card">
+      <div class="label">これまでの記録</div>
+      <a class="alllink" href="/history">すべての記録を見る・直す →</a>
+    </div>
   </div>
 
   <script>

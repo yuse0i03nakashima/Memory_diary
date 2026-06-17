@@ -1,0 +1,23 @@
+{# 記録1件を描画するマクロ。index と history の両方で使う。 #}
+{% macro entry_row(e, show_date=False) %}
+<div class="entry">
+  <span class="time">{% if show_date %}{{ e['created_at'] }}{% else %}{{ e['created_at'][11:] }}{% endif %}</span>
+  <div class="body-wrap">
+    <div class="body">{{ e['text'] }}</div>
+    <form class="edit-form" method="POST" action="/edit/{{ e['id'] }}">
+      <textarea name="text">{{ e['text'] }}</textarea>
+      <div class="edit-actions">
+        <button type="submit" class="mini">保存</button>
+        <button type="button" class="mini ghost" onclick="cancelEdit(this)">やめる</button>
+      </div>
+    </form>
+  </div>
+  <div class="row-actions">
+    <button type="button" class="icon" title="編集" onclick="startEdit(this)">✎</button>
+    <form method="POST" action="/delete/{{ e['id'] }}"
+          onsubmit="return confirm('この記録を削除しますか？');">
+      <button class="icon del" type="submit" title="削除">×</button>
+    </form>
+  </div>
+</div>
+{% endmacro %}
