@@ -1,7 +1,8 @@
 from flask import (Flask, render_template, request, redirect,
-                   url_for, session, jsonify)
+                   url_for, session, jsonify, Response)
 from datetime import datetime, timezone, timedelta
 import os
+import json
 import anthropic
 
 from database import init_db, get_connection
@@ -100,6 +101,60 @@ def history():
     for g in groups:
         g['entries'].reverse()  # 同じ日の中は古い順（朝→夜）
     return render_template('history.html', groups=groups, total=len(rows))
+
+
+# ─── バックアップ（保存／復元）───────────────────────────────
+@app.route('/export')
+def export():
+    """全記録をJSONファイルとしてダウンロードする（バックアップ）。"""
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute("SELECT created_at, entry_date, text FROM entries ORDER BY id")
+    rows = [dict(r) for r in c.fetchall()]
+    conn.close()
+    payload = json.dumps(rows, ensure_ascii=False, indent=2)
+    fname = 'memory_diary_backup_' + now_jst().strftime('%Y%m%d_%H%M') + '.json'
+    return Response(
+        payload,
+        mimetype='application/json; charset=utf-8',
+        headers={'Content-Disposition': f'attachment; filename={fname}'},
+    )
+
+
+@app.route('/import', methods=['GET', 'POST'])
+def import_data():
+    """バックアップJSONから記録を復元する（既存に追加する）。"""
+    if request.method == 'POST':
+        f = request.files.get('file')
+        if not f:
+            return render_template('import.html', message='ファイルを選んでください。')
+        try:
+            data = json.loads(f.read().decode('utf-8'))
+        except Exception:
+            return render_template('import.html',
+                                   message='JSONとして読み込めませんでした。')
+        if not isinstance(data, list):
+            return render_template('import.html',
+                                   message='バックアップの形式が正しくありません。')
+        conn = get_connection()
+        c = conn.cursor()
+        added = 0
+        for r in data:
+            text = (r.get('text') or '').strip()
+            if not text:
+                continue
+            created_at = r.get('created_at') or now_jst().strftime('%Y-%m-%d %H:%M')
+            entry_date = r.get('entry_date') or created_at[:10]
+            c.execute("""
+                INSERT INTO entries (created_at, entry_date, text)
+                VALUES (?, ?, ?)
+            """, (created_at, entry_date, text))
+            added += 1
+        conn.commit()
+        conn.close()
+        return render_template('import.html',
+                               message=f'{added}件を復元しました。')
+    return render_template('import.html', message=None)
 
 
 @app.route('/add', methods=['POST'])

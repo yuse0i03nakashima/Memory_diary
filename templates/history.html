@@ -27,6 +27,9 @@
     .backlink { display:inline-block; color:var(--blue); text-decoration:none;
       font-size:13px; margin:14px 0 4px; }
     .backlink:hover { text-decoration:underline; }
+    .tools { display:flex; gap:16px; margin:4px 0 8px; }
+    .tools a { color:var(--text-muted); text-decoration:none; font-size:12px; }
+    .tools a:hover { color:var(--blue); text-decoration:underline; }
     .day-head { font-size:12px; letter-spacing:1px; color:var(--blue);
       margin:22px 0 0; padding-bottom:4px; border-bottom:1px solid var(--border-light); }
     .card {
@@ -72,6 +75,10 @@
       <span class="count">全 {{ total }} 件</span>
     </header>
     <a class="backlink" href="/">← 今日の画面にもどる</a>
+    <div class="tools">
+      <a href="/export">⬇ バックアップを保存</a>
+      <a href="/import">⬆ バックアップから復元</a>
+    </div>
 
     {% if groups %}
       {% for g in groups %}

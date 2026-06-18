@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0c0d11">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <title>バックアップから復元 — 記憶のノート</title>
+  <style>
+    :root {
+      --bg:#0c0d11; --surface:#13151e; --border:#252838; --border-light:#2f3347;
+      --text:#dde1ec; --text-muted:#9aa3b8; --text-dim:#555d7a;
+      --blue:#5b8ff9; --green:#4ade80;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'DM Mono',monospace; background:var(--bg); color:var(--text);
+      padding:20px 14px 60px; line-height:1.7; }
+    .wrap { max-width:560px; margin:0 auto; }
+    h1 { font-size:16px; letter-spacing:2px; color:var(--blue); font-weight:500; }
+    .backlink { display:inline-block; color:var(--blue); text-decoration:none;
+      font-size:13px; margin:14px 0; }
+    .backlink:hover { text-decoration:underline; }
+    .card { background:var(--surface); border:1px solid var(--border-light);
+      border-top:2px solid var(--blue); padding:18px 16px; margin-top:8px; }
+    .label { font-size:9px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--text-muted); margin-bottom:12px; }
+    .note { font-size:12px; color:var(--text-muted); margin-bottom:14px; }
+    input[type="file"] { width:100%; color:var(--text); font-size:13px; margin-bottom:14px; }
+    button { padding:12px 18px; background:var(--blue); color:#0c0d11;
+      font-family:'DM Mono',monospace; font-size:13px; letter-spacing:1px;
+      border:none; cursor:pointer; }
+    button:hover { background:#7aaafb; }
+    .msg { font-size:13px; color:var(--green); margin-bottom:14px;
+      padding:10px 12px; background:rgba(74,222,128,0.08);
+      border-left:2px solid var(--green); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>バックアップから復元</h1>
+    <a class="backlink" href="/history">← 記録一覧にもどる</a>
+
+    <div class="card">
+      <div class="label">バックアップファイルを選んで復元</div>
+      {% if message %}<div class="msg">{{ message }}</div>{% endif %}
+      <div class="note">
+        「バックアップを保存」でダウンロードした JSON ファイルを選びます。
+        いまある記録に<strong>追加</strong>で読み込まれます（上書きはしません）。
+      </div>
+      <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".json,application/json" required>
+        <button type="submit">この内容で復元する</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
